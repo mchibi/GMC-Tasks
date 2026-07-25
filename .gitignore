@@ -1,0 +1,19 @@
+# --- Claude / Claude Code ---
+.claude/
+.claude*
+CLAUDE.md
+CLAUDE.local.md
+.mcp.json
+memory/
+MEMORY.md
+
+# --- Dépendances ---
+node_modules/
+
+# --- Environnement ---
+.env
+.env.local
+
+# --- Système ---
+.DS_Store
+npm-debug.log*
