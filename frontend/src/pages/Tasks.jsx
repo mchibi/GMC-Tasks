@@ -3,7 +3,8 @@ import api, { getErrorMessage } from '../api/client';
 import TaskForm from '../components/TaskForm.jsx';
 import TaskItem from '../components/TaskItem.jsx';
 
-// Page principale : formulaire de création + liste des tâches de l'utilisateur.
+// Page principale : formulaire de création + liste des tâches de l'utilisateur,
+// avec mise à jour et suppression synchronisées avec la base de données.
 function Tasks() {
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -28,6 +29,19 @@ function Tasks() {
     setTasks((prev) => [task, ...prev]);
   };
 
+  // Met à jour une tâche en base, puis remplace sa version locale par
+  // celle renvoyée par l'API (source de vérité).
+  const handleUpdate = async (id, changes) => {
+    const { data } = await api.put(`/tasks/${id}`, changes);
+    setTasks((prev) => prev.map((t) => (t._id === id ? data.data : t)));
+  };
+
+  // Supprime la tâche en base puis la retire de la liste affichée
+  const handleDelete = async (id) => {
+    await api.delete(`/tasks/${id}`);
+    setTasks((prev) => prev.filter((t) => t._id !== id));
+  };
+
   return (
     <>
       <TaskForm onTaskCreated={handleTaskCreated} />
@@ -49,7 +63,12 @@ function Tasks() {
         )}
 
         {tasks.map((task) => (
-          <TaskItem key={task._id} task={task} />
+          <TaskItem
+            key={task._id}
+            task={task}
+            onUpdate={handleUpdate}
+            onDelete={handleDelete}
+          />
         ))}
       </section>
     </>

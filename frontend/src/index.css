@@ -145,6 +145,26 @@ body {
   background: var(--bg);
 }
 
+.btn-danger {
+  background: transparent;
+  color: var(--danger);
+  border: 1px solid #fecaca;
+}
+
+.btn-danger:hover {
+  background: var(--danger-bg);
+}
+
+.btn-sm {
+  padding: 0.35rem 0.7rem;
+  font-size: 0.85rem;
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
 .btn-block {
   width: 100%;
 }
@@ -259,6 +279,49 @@ body {
   align-items: flex-end;
   gap: 0.4rem;
   flex-shrink: 0;
+}
+
+/* ===== Actions sur une tâche (statut, modifier, supprimer) ===== */
+.task-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.task-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.status-select {
+  padding: 0.35rem 0.6rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font: inherit;
+  font-size: 0.85rem;
+  background: #fbfbfe;
+  cursor: pointer;
+}
+
+.status-select:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+/* ===== Édition en place ===== */
+.task-item.editing {
+  display: block;
+}
+
+.task-edit-form .field {
+  margin-bottom: 0.75rem;
+}
+
+.task-edit-buttons {
+  display: flex;
+  gap: 0.5rem;
 }
 
 /* ===== Badges de statut ===== */

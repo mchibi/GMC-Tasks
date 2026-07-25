@@ -9,7 +9,7 @@ et suivre leur progression.
 - ✅ **Phase 1** : configuration du projet et du backend (structure, dépendances, connexion MongoDB, API CRUD des tâches)
 - ✅ **Phase 2** : authentification et autorisation (inscription, connexion, JWT, tâches privées par utilisateur)
 - ✅ **Phase 3** : frontend React — création et liste des tâches (titre, description, statut, date limite)
-- ⬜ Phase 4+ : modification et suppression des tâches depuis l'interface
+- ✅ **Phase 4** : mise à jour et suppression des tâches depuis l'interface (statut, édition en place, suppression confirmée)
 
 ## Structure du projet
 
@@ -42,7 +42,7 @@ GMC/
 │   │   │   ├── Navbar.jsx        # Barre de navigation (utilisateur, déconnexion)
 │   │   │   ├── ProtectedRoute.jsx # Redirection vers /login si non connecté
 │   │   │   ├── TaskForm.jsx      # Formulaire de création d'une tâche
-│   │   │   └── TaskItem.jsx      # Carte d'une tâche (badge statut, échéance)
+│   │   │   └── TaskItem.jsx      # Carte d'une tâche : affichage, édition, suppression
 │   │   ├── pages/
 │   │   │   ├── Login.jsx         # Page de connexion
 │   │   │   ├── Register.jsx      # Page d'inscription
@@ -98,6 +98,15 @@ npm run dev
 L'application s'ouvre sur **http://localhost:5173**. En développement, le proxy
 Vite redirige automatiquement les appels `/api` vers le backend — aucun réglage
 CORS supplémentaire n'est nécessaire.
+
+## Fonctionnalités de l'interface
+
+- **Inscription et connexion** — session conservée entre les visites, déconnexion automatique si le jeton expire
+- **Création d'une tâche** — titre, description et date limite
+- **Liste personnelle** — badge de statut coloré, échéance formatée, mention « en retard » si la date est dépassée
+- **Changement de statut** — sélecteur direct sur la carte (À faire / En cours / Terminée)
+- **Modification** — édition en place du titre, de la description et de l'échéance, avec Enregistrer / Annuler
+- **Suppression** — bouton avec demande de confirmation
 
 ## API — Endpoints disponibles
 
