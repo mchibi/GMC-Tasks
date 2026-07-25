@@ -8,6 +8,13 @@ const STATUS_LABELS = {
   done: 'Terminée',
 };
 
+// Libellés des priorités
+const PRIORITY_LABELS = {
+  low: 'Basse',
+  medium: 'Moyenne',
+  high: 'Haute',
+};
+
 const formatDate = (isoDate) =>
   new Intl.DateTimeFormat('fr-FR', {
     day: 'numeric',
@@ -26,6 +33,7 @@ function TaskItem({ task, onUpdate, onDelete }) {
   const [editing, setEditing] = useState(false);
   const [title, setTitle] = useState(task.title);
   const [description, setDescription] = useState(task.description);
+  const [priority, setPriority] = useState(task.priority);
   const [dueDate, setDueDate] = useState(toInputDate(task.dueDate));
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
@@ -47,6 +55,7 @@ function TaskItem({ task, onUpdate, onDelete }) {
   const startEditing = () => {
     setTitle(task.title);
     setDescription(task.description);
+    setPriority(task.priority);
     setDueDate(toInputDate(task.dueDate));
     setError('');
     setEditing(true);
@@ -61,6 +70,7 @@ function TaskItem({ task, onUpdate, onDelete }) {
       await onUpdate(task._id, {
         title,
         description,
+        priority,
         dueDate: dueDate || null,
       });
       setEditing(false);
@@ -112,6 +122,18 @@ function TaskItem({ task, onUpdate, onDelete }) {
             />
           </div>
           <div className="form-row">
+            <div className="field">
+              <label htmlFor={`priority-${task._id}`}>Priorité</label>
+              <select
+                id={`priority-${task._id}`}
+                value={priority}
+                onChange={(e) => setPriority(e.target.value)}
+              >
+                <option value="low">Basse</option>
+                <option value="medium">Moyenne</option>
+                <option value="high">Haute</option>
+              </select>
+            </div>
             <div className="field">
               <label htmlFor={`due-${task._id}`}>Date limite</label>
               <input
@@ -171,6 +193,9 @@ function TaskItem({ task, onUpdate, onDelete }) {
       </div>
       <div className="task-meta">
         <span className={`badge badge-${task.status}`}>{STATUS_LABELS[task.status]}</span>
+        <span className={`badge badge-priority priority-${task.priority}`}>
+          Priorité {PRIORITY_LABELS[task.priority]?.toLowerCase()}
+        </span>
         {task.dueDate && (
           <span className={`due-date ${isOverdue(task) ? 'overdue' : ''}`}>
             📅 {formatDate(task.dueDate)}

@@ -83,7 +83,8 @@ body {
 }
 
 .field input,
-.field textarea {
+.field textarea,
+.field select {
   width: 100%;
   padding: 0.6rem 0.75rem;
   border: 1px solid var(--border);
@@ -93,7 +94,8 @@ body {
 }
 
 .field input:focus,
-.field textarea:focus {
+.field textarea:focus,
+.field select:focus {
   outline: 2px solid var(--primary);
   outline-offset: -1px;
   background: #fff;
@@ -221,6 +223,75 @@ body {
   margin-bottom: 1rem;
 }
 
+/* ===== Barre de filtres, recherche et tri ===== */
+.filters {
+  margin-top: 1.25rem;
+}
+
+.search-field {
+  margin-bottom: 0.9rem;
+}
+
+.filters-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.status-tabs {
+  display: flex;
+  gap: 0.25rem;
+  background: var(--bg);
+  padding: 0.25rem;
+  border-radius: 9px;
+}
+
+.tab {
+  padding: 0.35rem 0.75rem;
+  border: none;
+  background: transparent;
+  border-radius: 7px;
+  font: inherit;
+  font-size: 0.87rem;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.tab:hover {
+  color: var(--text);
+}
+
+.tab-active {
+  background: var(--surface);
+  color: var(--primary);
+  font-weight: 600;
+  box-shadow: var(--shadow);
+}
+
+.sort-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.87rem;
+}
+
+.sort-controls label {
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.sort-controls select {
+  padding: 0.35rem 0.6rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font: inherit;
+  font-size: 0.87rem;
+  background: #fbfbfe;
+  cursor: pointer;
+}
+
 /* ===== Liste des tâches ===== */
 .task-list {
   margin-top: 2rem;
@@ -346,6 +417,29 @@ body {
 .badge-done {
   background: #d1fae5;
   color: #047857;
+}
+
+/* ===== Badges de priorité ===== */
+.badge-priority {
+  border: 1px solid transparent;
+}
+
+.priority-low {
+  background: #f8fafc;
+  color: #64748b;
+  border-color: #e2e8f0;
+}
+
+.priority-medium {
+  background: #eef2ff;
+  color: #4338ca;
+  border-color: #e0e7ff;
+}
+
+.priority-high {
+  background: #fee2e2;
+  color: #b91c1c;
+  border-color: #fecaca;
 }
 
 /* ===== Dates limites ===== */

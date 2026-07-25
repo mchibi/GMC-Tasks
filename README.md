@@ -10,6 +10,7 @@ et suivre leur progression.
 - ✅ **Phase 2** : authentification et autorisation (inscription, connexion, JWT, tâches privées par utilisateur)
 - ✅ **Phase 3** : frontend React — création et liste des tâches (titre, description, statut, date limite)
 - ✅ **Phase 4** : mise à jour et suppression des tâches depuis l'interface (statut, édition en place, suppression confirmée)
+- ✅ **Phase 5** : filtrage par statut, recherche textuelle et tri (échéance, priorité, titre, date de création)
 
 ## Structure du projet
 
@@ -41,6 +42,7 @@ GMC/
 │   │   ├── components/
 │   │   │   ├── Navbar.jsx        # Barre de navigation (utilisateur, déconnexion)
 │   │   │   ├── ProtectedRoute.jsx # Redirection vers /login si non connecté
+│   │   │   ├── TaskFilters.jsx   # Recherche, filtre par statut et tri
 │   │   │   ├── TaskForm.jsx      # Formulaire de création d'une tâche
 │   │   │   └── TaskItem.jsx      # Carte d'une tâche : affichage, édition, suppression
 │   │   ├── pages/
@@ -102,11 +104,14 @@ CORS supplémentaire n'est nécessaire.
 ## Fonctionnalités de l'interface
 
 - **Inscription et connexion** — session conservée entre les visites, déconnexion automatique si le jeton expire
-- **Création d'une tâche** — titre, description et date limite
+- **Création d'une tâche** — titre, description, priorité et date limite
 - **Liste personnelle** — badge de statut coloré, échéance formatée, mention « en retard » si la date est dépassée
 - **Changement de statut** — sélecteur direct sur la carte (À faire / En cours / Terminée)
 - **Modification** — édition en place du titre, de la description et de l'échéance, avec Enregistrer / Annuler
 - **Suppression** — bouton avec demande de confirmation
+- **Recherche** — par titre ou description, avec temporisation de la saisie (une seule requête au lieu d'une par frappe)
+- **Filtre par statut** — onglets Toutes / À faire / En cours / Terminées
+- **Tri** — par date de création, échéance, priorité ou titre, dans les deux sens
 
 ## API — Endpoints disponibles
 
@@ -123,7 +128,7 @@ CORS supplémentaire n'est nécessaire.
 | Méthode | Endpoint         | Description                              |
 | ------- | ---------------- | ---------------------------------------- |
 | GET     | `/`              | Vérification de l'état de l'API (publique) |
-| GET     | `/api/tasks`     | Liste des tâches de l'utilisateur        |
+| GET     | `/api/tasks`     | Liste des tâches (filtrable et triable)  |
 | POST    | `/api/tasks`     | Création d'une tâche                     |
 | GET     | `/api/tasks/:id` | Détail d'une de ses tâches               |
 | PUT     | `/api/tasks/:id` | Modification d'une de ses tâches         |
@@ -131,6 +136,21 @@ CORS supplémentaire n'est nécessaire.
 
 Chaque utilisateur n'accède qu'à **ses propres tâches** : toute tentative sur la
 tâche d'un autre compte renvoie un 404, et toute requête sans jeton valide un 401.
+
+#### Paramètres de `GET /api/tasks`
+
+| Paramètre | Valeurs                                       | Description                              |
+| --------- | --------------------------------------------- | ---------------------------------------- |
+| `status`  | `todo`, `in-progress`, `done`                 | Filtre par statut                        |
+| `search`  | texte libre                                   | Recherche dans le titre **et** la description (insensible à la casse) |
+| `sortBy`  | `createdAt`, `dueDate`, `priority`, `title`   | Critère de tri (défaut : `createdAt`)    |
+| `order`   | `asc`, `desc`                                 | Sens du tri (défaut : `desc`)            |
+
+Les paramètres inconnus sont ignorés au lieu de provoquer une erreur. Le tri par
+priorité respecte l'ordre d'importance (haute > moyenne > basse) et non l'ordre
+alphabétique ; les tâches sans échéance sont toujours placées en fin de liste.
+
+Exemple : `/api/tasks?status=todo&search=rapport&sortBy=priority&order=desc`
 
 ### Sécurité mise en place
 
@@ -146,6 +166,7 @@ tâche d'un autre compte renvoie un 404, et toute requête sans jeton valide un 
   "title": "Créer le frontend React",      // obligatoire, max 100 caractères
   "description": "Composants et pages",    // optionnel, max 1000 caractères
   "status": "todo",                        // "todo" | "in-progress" | "done"
+  "priority": "medium",                    // "low" | "medium" | "high"
   "dueDate": "2026-08-15"                  // échéance, optionnelle
 }
 ```

@@ -29,6 +29,14 @@ const taskSchema = new mongoose.Schema(
       },
       default: 'todo',
     },
+    priority: {
+      type: String,
+      enum: {
+        values: ['low', 'medium', 'high'],
+        message: 'Priorité invalide : {VALUE} (valeurs possibles : low, medium, high)',
+      },
+      default: 'medium',
+    },
     dueDate: {
       type: Date,
       default: null,

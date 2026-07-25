@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import api, { getErrorMessage } from '../api/client';
 
-// Formulaire de création d'une tâche : titre, description et date limite.
+// Formulaire de création d'une tâche : titre, description, priorité et date limite.
 function TaskForm({ onTaskCreated }) {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
+  const [priority, setPriority] = useState('medium');
   const [dueDate, setDueDate] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -14,14 +15,16 @@ function TaskForm({ onTaskCreated }) {
     setError('');
     setLoading(true);
     try {
-      const { data } = await api.post('/tasks', {
+      await api.post('/tasks', {
         title,
         description,
+        priority,
         dueDate: dueDate || null,
       });
-      onTaskCreated(data.data);
+      onTaskCreated();
       setTitle('');
       setDescription('');
+      setPriority('medium');
       setDueDate('');
     } catch (err) {
       setError(getErrorMessage(err));
@@ -59,6 +62,18 @@ function TaskForm({ onTaskCreated }) {
           />
         </div>
         <div className="form-row">
+          <div className="field">
+            <label htmlFor="priority">Priorité</label>
+            <select
+              id="priority"
+              value={priority}
+              onChange={(e) => setPriority(e.target.value)}
+            >
+              <option value="low">Basse</option>
+              <option value="medium">Moyenne</option>
+              <option value="high">Haute</option>
+            </select>
+          </div>
           <div className="field">
             <label htmlFor="dueDate">Date limite</label>
             <input
