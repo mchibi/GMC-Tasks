@@ -1,10 +1,14 @@
 import mongoose from 'mongoose';
 
-// Modèle Task : représente une tâche de l'utilisateur.
-// NOTE : le champ `user` (référence vers le propriétaire) sera ajouté
-// lors de la phase d'authentification.
+// Modèle Task : représente une tâche appartenant à un utilisateur.
 const taskSchema = new mongoose.Schema(
   {
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      required: true,
+      index: true, // accélère la récupération des tâches d'un utilisateur
+    },
     title: {
       type: String,
       required: [true, 'Le titre est obligatoire'],

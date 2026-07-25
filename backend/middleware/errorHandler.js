@@ -6,6 +6,14 @@ const errorHandler = (err, req, res, next) => {
     return res.status(400).json({ success: false, message: 'Identifiant invalide' });
   }
 
+  // Violation d'unicité (ex : email déjà enregistré)
+  if (err.code === 11000) {
+    const field = Object.keys(err.keyValue || {})[0] || 'champ';
+    return res
+      .status(400)
+      .json({ success: false, message: `Ce ${field} est déjà utilisé` });
+  }
+
   // Erreurs de validation du schéma (titre manquant, statut invalide...)
   if (err.name === 'ValidationError') {
     const messages = Object.values(err.errors).map((e) => e.message);

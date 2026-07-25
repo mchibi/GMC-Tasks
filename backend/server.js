@@ -3,6 +3,8 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import connectDB from './config/db.js';
 import taskRoutes from './routes/taskRoutes.js';
+import authRoutes from './routes/authRoutes.js';
+import protect from './middleware/auth.js';
 import errorHandler from './middleware/errorHandler.js';
 
 // Charge les variables d'environnement depuis .env
@@ -23,7 +25,8 @@ app.get('/', (req, res) => {
 });
 
 // Routes de l'API
-app.use('/api/tasks', taskRoutes);
+app.use('/api/auth', authRoutes); // inscription / connexion (publiques)
+app.use('/api/tasks', protect, taskRoutes); // tâches : réservées aux utilisateurs connectés
 
 // Gestion des routes inexistantes
 app.use((req, res) => {

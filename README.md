@@ -7,7 +7,8 @@ et suivre leur progression.
 ## État d'avancement
 
 - ✅ **Phase 1** : configuration du projet et du backend (structure, dépendances, connexion MongoDB, API CRUD des tâches)
-- ⬜ Phase 2+ : frontend React, authentification (inscription/connexion), listes personnalisées par utilisateur
+- ✅ **Phase 2** : authentification et autorisation (inscription, connexion, JWT, tâches privées par utilisateur)
+- ⬜ Phase 3+ : frontend React
 
 ## Structure du projet
 
@@ -17,13 +18,17 @@ GMC/
 │   ├── config/
 │   │   └── db.js                 # Connexion MongoDB (Mongoose)
 │   ├── controllers/
+│   │   ├── authController.js     # Inscription, connexion, profil
 │   │   └── taskController.js     # Logique métier CRUD des tâches
 │   ├── middleware/
+│   │   ├── auth.js               # Vérification du jeton JWT (protect)
 │   │   └── errorHandler.js       # Gestion centralisée des erreurs
 │   ├── models/
-│   │   └── Task.js               # Schéma Mongoose d'une tâche
+│   │   ├── Task.js               # Schéma d'une tâche (liée à son propriétaire)
+│   │   └── User.js               # Schéma utilisateur (mot de passe haché bcrypt)
 │   ├── routes/
-│   │   └── taskRoutes.js         # Définition des endpoints /api/tasks
+│   │   ├── authRoutes.js         # Endpoints /api/auth
+│   │   └── taskRoutes.js         # Endpoints /api/tasks (protégés)
 │   ├── .env                      # Variables d'environnement (non versionné)
 │   ├── .env.example              # Modèle de configuration
 │   ├── package.json
@@ -62,14 +67,34 @@ Le serveur démarre sur **http://localhost:5001**.
 
 ## API — Endpoints disponibles
 
-| Méthode | Endpoint         | Description                       |
-| ------- | ---------------- | --------------------------------- |
-| GET     | `/`              | Vérification de l'état de l'API   |
-| GET     | `/api/tasks`     | Liste de toutes les tâches        |
-| POST    | `/api/tasks`     | Création d'une tâche              |
-| GET     | `/api/tasks/:id` | Détail d'une tâche                |
-| PUT     | `/api/tasks/:id` | Modification d'une tâche          |
-| DELETE  | `/api/tasks/:id` | Suppression d'une tâche           |
+### Authentification (publiques)
+
+| Méthode | Endpoint             | Description                                  |
+| ------- | -------------------- | -------------------------------------------- |
+| POST    | `/api/auth/register` | Inscription (renvoie un jeton JWT)           |
+| POST    | `/api/auth/login`    | Connexion (renvoie un jeton JWT)             |
+| GET     | `/api/auth/me`       | Profil de l'utilisateur connecté 🔒          |
+
+### Tâches (🔒 jeton requis : `Authorization: Bearer <token>`)
+
+| Méthode | Endpoint         | Description                              |
+| ------- | ---------------- | ---------------------------------------- |
+| GET     | `/`              | Vérification de l'état de l'API (publique) |
+| GET     | `/api/tasks`     | Liste des tâches de l'utilisateur        |
+| POST    | `/api/tasks`     | Création d'une tâche                     |
+| GET     | `/api/tasks/:id` | Détail d'une de ses tâches               |
+| PUT     | `/api/tasks/:id` | Modification d'une de ses tâches         |
+| DELETE  | `/api/tasks/:id` | Suppression d'une de ses tâches          |
+
+Chaque utilisateur n'accède qu'à **ses propres tâches** : toute tentative sur la
+tâche d'un autre compte renvoie un 404, et toute requête sans jeton valide un 401.
+
+### Sécurité mise en place
+
+- Mots de passe hachés avec **bcrypt** (jamais stockés ni renvoyés en clair)
+- Authentification **stateless par JWT** signé (`JWT_SECRET`), expiration configurable
+- Message identique pour email inconnu / mot de passe erroné (pas d'énumération de comptes)
+- Secrets uniquement dans `.env` (non versionné)
 
 ### Modèle d'une tâche
 
@@ -87,21 +112,34 @@ Les champs `createdAt` et `updatedAt` sont gérés automatiquement.
 ### Exemples (curl)
 
 ```bash
-# Créer une tâche
+# S'inscrire (récupérer le jeton dans la réponse)
+curl -X POST http://localhost:5001/api/auth/register \
+  -H 'Content-Type: application/json' \
+  -d '{"name":"Alice","email":"alice@example.com","password":"motdepasse123"}'
+
+# Se connecter
+curl -X POST http://localhost:5001/api/auth/login \
+  -H 'Content-Type: application/json' \
+  -d '{"email":"alice@example.com","password":"motdepasse123"}'
+
+# Créer une tâche (remplacer <token> par le jeton reçu)
 curl -X POST http://localhost:5001/api/tasks \
+  -H 'Authorization: Bearer <token>' \
   -H 'Content-Type: application/json' \
   -d '{"title":"Ma première tâche","dueDate":"2026-08-15"}'
 
-# Lister les tâches
-curl http://localhost:5001/api/tasks
+# Lister ses tâches
+curl http://localhost:5001/api/tasks -H 'Authorization: Bearer <token>'
 
 # Changer le statut
 curl -X PUT http://localhost:5001/api/tasks/<id> \
+  -H 'Authorization: Bearer <token>' \
   -H 'Content-Type: application/json' \
   -d '{"status":"in-progress"}'
 
 # Supprimer
-curl -X DELETE http://localhost:5001/api/tasks/<id>
+curl -X DELETE http://localhost:5001/api/tasks/<id> \
+  -H 'Authorization: Bearer <token>'
 ```
 
 Toutes les réponses suivent le format `{ "success": true|false, "data"|"message": ... }`.
