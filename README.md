@@ -1,8 +1,10 @@
 # GMC Tasks — Application de gestion des tâches (pile MERN)
 
+**🚀 Application en ligne : https://tasks.synaptixonline.com**
+
 Application de gestion des tâches développée avec MongoDB, Express.js, React et Node.js.
-Les utilisateurs pourront créer, modifier et supprimer des tâches, définir des échéances
-et suivre leur progression.
+Les utilisateurs peuvent créer, modifier et supprimer des tâches, définir des échéances
+et suivre leur progression, chacun disposant de sa liste privée.
 
 ## État d'avancement
 
@@ -11,6 +13,7 @@ et suivre leur progression.
 - ✅ **Phase 3** : frontend React — création et liste des tâches (titre, description, statut, date limite)
 - ✅ **Phase 4** : mise à jour et suppression des tâches depuis l'interface (statut, édition en place, suppression confirmée)
 - ✅ **Phase 5** : filtrage par statut, recherche textuelle et tri (échéance, priorité, titre, date de création)
+- ✅ **Phase 6** : déploiement en production sur https://tasks.synaptixonline.com (voir [DEPLOIEMENT.md](DEPLOIEMENT.md))
 
 ## Structure du projet
 
