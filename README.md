@@ -8,7 +8,8 @@ et suivre leur progression.
 
 - ✅ **Phase 1** : configuration du projet et du backend (structure, dépendances, connexion MongoDB, API CRUD des tâches)
 - ✅ **Phase 2** : authentification et autorisation (inscription, connexion, JWT, tâches privées par utilisateur)
-- ⬜ Phase 3+ : frontend React
+- ✅ **Phase 3** : frontend React — création et liste des tâches (titre, description, statut, date limite)
+- ⬜ Phase 4+ : modification et suppression des tâches depuis l'interface
 
 ## Structure du projet
 
@@ -33,6 +34,25 @@ GMC/
 │   ├── .env.example              # Modèle de configuration
 │   ├── package.json
 │   └── server.js                 # Point d'entrée Express
+├── frontend/
+│   ├── src/
+│   │   ├── api/client.js         # Instance axios (jeton auto, gestion des 401)
+│   │   ├── context/AuthContext.jsx  # État d'authentification global
+│   │   ├── components/
+│   │   │   ├── Navbar.jsx        # Barre de navigation (utilisateur, déconnexion)
+│   │   │   ├── ProtectedRoute.jsx # Redirection vers /login si non connecté
+│   │   │   ├── TaskForm.jsx      # Formulaire de création d'une tâche
+│   │   │   └── TaskItem.jsx      # Carte d'une tâche (badge statut, échéance)
+│   │   ├── pages/
+│   │   │   ├── Login.jsx         # Page de connexion
+│   │   │   ├── Register.jsx      # Page d'inscription
+│   │   │   └── Tasks.jsx         # Page principale : formulaire + liste
+│   │   ├── App.jsx               # Définition des routes
+│   │   ├── main.jsx              # Point d'entrée React
+│   │   └── index.css             # Styles de l'application
+│   ├── index.html
+│   ├── vite.config.js            # Proxy /api → backend (port 5001)
+│   └── package.json
 └── README.md
 ```
 
@@ -52,6 +72,8 @@ Pour l'arrêter / le relancer : `docker stop gmc-mongo` / `docker start gmc-mong
 
 ## Installation et démarrage
 
+### 1. Backend (API)
+
 ```bash
 cd backend
 npm install
@@ -64,6 +86,18 @@ npm start              # production
 Le serveur démarre sur **http://localhost:5001**.
 
 > ⚠️ Sur macOS, le port 5000 est occupé par le récepteur AirPlay — le projet utilise donc le port 5001.
+
+### 2. Frontend (interface React)
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+L'application s'ouvre sur **http://localhost:5173**. En développement, le proxy
+Vite redirige automatiquement les appels `/api` vers le backend — aucun réglage
+CORS supplémentaire n'est nécessaire.
 
 ## API — Endpoints disponibles
 
